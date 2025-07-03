@@ -97,13 +97,7 @@ if __name__ == "__main__":
     # ensure server is running
     print("\nIMPORTANT: Make sure the VPN server is running:")
     print("  python -m src.server.main")
-    print("\nPress Enter to continue or Ctrl+C to cancel...")
-    
-    try:
-        input()
-    except KeyboardInterrupt:
-        print("\nCancelled")
-        sys.exit(0)
+    print("\nTesting connection...")
     
     # run test
     success = test_connection()

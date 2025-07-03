@@ -1,0 +1,14 @@
+{
+  "testuser": {
+    "password_hash": "$2b$12$aGA2m0H1EYv.OPOA5p2aUuvjzduFERSTg8u3UWjGhBD/kzcb0abpO",
+    "enabled": true,
+    "max_sessions": 1,
+    "created_at": 1758047301.8389628
+  },
+  "admin": {
+    "password_hash": "$2b$12$8wFQyqYTYHZZjpx3cGHnRuwQdDKlxuEQ3UdMWGqd3XIIyrRkSYpw2",
+    "enabled": true,
+    "max_sessions": 1,
+    "created_at": 1758047302.0813217
+  }
+}

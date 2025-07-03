@@ -155,9 +155,12 @@ class VPNConnection:
                 self._cleanup_connection()
                 
             except ssl.SSLError as e:
-                logger.error(f"ssl error: {e}")
+                logger.warning(f"ssl error on attempt {attempt + 1}: {e}")
                 self._cleanup_connection()
-                break  # don't retry ssl errors
+                # retry ssl errors if ssl verification is disabled
+                if not self.config.ssl_verify:
+                    continue
+                break  # don't retry ssl errors when verification is enabled
                 
             except Exception as e:
                 logger.error(f"unexpected error: {e}")
