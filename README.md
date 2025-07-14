@@ -19,6 +19,27 @@ kimoVPN is an educational project that demonstrates secure networking concepts t
 
 ## Quick Start
 
+### Local Development (Windows)
+
+For quick local testing on Windows:
+
+```bash
+# Terminal 1: Start server
+cd kimoVPN
+source .venv/Scripts/activate
+python -m src.server.main
+
+# Terminal 2: Start client
+cd kimoVPN
+source .venv/Scripts/activate
+python -m src.client.main --local
+```
+
+The `--local` flag automatically:
+- Disables SSL verification (for self-signed certificates)
+- Uses localhost (127.0.0.1) as server
+- Uses test credentials (testuser/testpass123)
+
 ### Prerequisites
 
 - Python 3.9 or higher
@@ -62,7 +83,13 @@ cp .env.example .env
 
 5. **Run the client**:
 ```bash
-python -m src.client.main
+# For local development/testing (Windows)
+python -m src.client.main --local
+# This automatically uses localhost, test credentials, and disables SSL verification
+
+# Or specify options manually
+python -m src.client.main --no-verify --username testuser --password testpass123
+
 # Web UI will automatically open at http://127.0.0.1:5000
 ```
 
