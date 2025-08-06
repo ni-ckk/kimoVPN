@@ -22,6 +22,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from src.server.auth import AuthManager
+from src.server.packet_handler import PacketHandler, PacketRouter
 from src.common.protocol import (
     MessageDecoder, MessageEncoder, ProtocolMessage, MessageType,
     create_auth_response, create_error_message, create_heartbeat_message
@@ -119,6 +120,10 @@ class VPNServer:
         self.auth_manager = auth_manager or AuthManager()
         self.next_virtual_ip = 2  # start from 10.8.0.2
         self.lock = threading.Lock()
+        
+        # packet handling for phase 2
+        self.packet_handler = PacketHandler(echo_mode=True)
+        self.packet_router = PacketRouter()
     
     def start(self):
         """Start the VPN server."""
@@ -147,6 +152,9 @@ class VPNServer:
             self.heartbeat_thread = threading.Thread(target=self._heartbeat_loop, daemon=True)
             self.heartbeat_thread.start()
             
+            # start packet handler
+            self.packet_handler.start()
+            
             logger.info(
                 "vpn server started",
                 bind=f"{self.config.bind_host}:{self.config.bind_port}",
@@ -162,6 +170,9 @@ class VPNServer:
         """Stop the VPN server."""
         logger.info("stopping vpn server")
         self.running = False
+        
+        # stop packet handler
+        self.packet_handler.stop()
         
         # close all client connections
         with self.lock:
@@ -300,6 +311,18 @@ class VPNServer:
         elif message.msg_type == MessageType.DISCONNECT:
             logger.info("client requested disconnect", address=client.address)
             client.running = False
+        elif message.msg_type == MessageType.DATA:
+            # handle data packets (phase 2)
+            if not client.authenticated:
+                error_msg = create_error_message(
+                    error_code="AUTH_REQUIRED",
+                    error_message="Authentication required",
+                    sequence=message.sequence
+                )
+                client.send_message(error_msg)
+                return
+            
+            self._handle_data_message(client, message)
         else:
             # check if authenticated for other message types
             if not client.authenticated:
@@ -406,6 +429,56 @@ class VPNServer:
             if self.next_virtual_ip > 254:
                 self.next_virtual_ip = 2  # wrap around
             return virtual_ip
+    
+    def _handle_data_message(self, client: ClientConnection, message: ProtocolMessage):
+        """
+        Handle DATA message containing packet data.
+        
+        Args:
+            client: Client connection
+            message: Data message
+        """
+        # get packet data from payload
+        packet_data = message.payload.get("data", b"")
+        
+        if not packet_data:
+            logger.warning("empty data packet", address=client.address)
+            return
+        
+        # if packet data is base64 encoded string, decode it
+        if isinstance(packet_data, str):
+            import base64
+            try:
+                packet_data = base64.b64decode(packet_data)
+            except Exception as e:
+                logger.error("failed to decode packet data", error=str(e))
+                return
+        
+        # process packet through packet handler
+        client_id = f"{client.address[0]}:{client.address[1]}"
+        response_data = self.packet_handler.process_packet(packet_data, client_id)
+        
+        # add client to router if not already there
+        if client.virtual_ip:
+            self.packet_router.add_client(client_id, client.virtual_ip)
+        
+        # send response if any
+        if response_data:
+            import base64
+            response_msg = ProtocolMessage(
+                msg_type=MessageType.DATA,
+                sequence=message.sequence,
+                payload={
+                    "data": base64.b64encode(response_data).decode('utf-8')
+                }
+            )
+            client.send_message(response_msg)
+            
+            logger.debug(
+                "sent data response",
+                address=client.address,
+                size=len(response_data)
+            )
     
     def _heartbeat_loop(self):
         """Send periodic heartbeats to all connected clients."""

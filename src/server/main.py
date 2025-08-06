@@ -77,6 +77,13 @@ def parse_arguments():
         help="Require client certificate for connection"
     )
     
+    # convenience flags
+    parser.add_argument(
+        "--local",
+        action="store_true",
+        help="Use local testing configuration (bind to 127.0.0.1)"
+    )
+    
     # server settings
     parser.add_argument(
         "--max-clients",
@@ -130,6 +137,10 @@ def main():
     
     # parse arguments
     args = parse_arguments()
+    
+    # apply --local flag overrides
+    if args.local:
+        args.host = "127.0.0.1"
     
     # configure logging
     configure_logging(
