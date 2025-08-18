@@ -1,12 +1,8 @@
 # kimoVPN
 
-A secure VPN client/server application built for cybersecurity portfolio demonstration.
-
 ## Overview
 
 kimoVPN is an educational project that demonstrates secure networking concepts through a custom VPN implementation. It features end-to-end encryption, web-based client control, and a fail-secure kill switch mechanism.
-
-**Important**: This is an educational project for portfolio purposes. Not intended for production use without comprehensive security audit.
 
 ## Features
 
