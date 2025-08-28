@@ -7,6 +7,7 @@ requires-python = ">=3.9"
 dependencies = [
     "pynacl>=1.5.0",            # cryptography using libsodium
     "flask>=3.0.0",             # web UI framework
+    "flask-cors>=4.0.0",        # cross-origin resource sharing
     "flask-socketio>=5.3.0",    # real-time websocket updates
     "python-socketio>=5.11.0",  # socketIO backend
     "passlib[bcrypt]>=1.7.4",   # password hashing with bcrypt

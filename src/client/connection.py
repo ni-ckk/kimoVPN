@@ -501,3 +501,44 @@ class VPNConnection:
             return {"error": "Not authenticated"}
         
         return self.packet_tester.run_echo_test(**kwargs)
+
+    def get_connection_stats(self) -> Dict[str, Any]:
+        """
+        Get comprehensive connection statistics.
+        
+        Returns:
+            Dictionary containing connection stats
+        """
+        stats = {
+            "status": self.status.value,
+            "connected": self.connected,
+            "authenticated": self.authenticated,
+            "virtual_ip": self.virtual_ip,
+            "session_token": self.session_token is not None,
+            "bytes_sent": 0,
+            "bytes_received": 0,
+            "packets_sent": 0,
+            "packets_received": 0,
+            "current_latency_ms": None,
+            "average_latency_ms": None
+        }
+        
+        # get stats from packet handler if available
+        if self.packet_handler:
+            handler_stats = self.packet_handler.get_stats()
+            stats.update({
+                "bytes_sent": handler_stats.get("bytes_sent", 0),
+                "bytes_received": handler_stats.get("bytes_received", 0),
+                "packets_sent": handler_stats.get("packets_sent", 0),
+                "packets_received": handler_stats.get("packets_received", 0),
+                "packets_encrypted": handler_stats.get("packets_encrypted", 0),
+                "packets_decrypted": handler_stats.get("packets_decrypted", 0),
+                "echo_avg_latency_ms": handler_stats.get("echo_avg_latency_ms", 0),
+            })
+            
+            # use echo latency as current latency
+            if handler_stats.get("echo_avg_latency_ms"):
+                stats["current_latency_ms"] = handler_stats["echo_avg_latency_ms"]
+                stats["average_latency_ms"] = handler_stats["echo_avg_latency_ms"]
+        
+        return stats

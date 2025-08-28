@@ -197,6 +197,281 @@
             font-size: 12px;
             color: #9ca3af;
         }
+        
+        .settings-section {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .setting-label {
+            font-size: 14px;
+            color: #4b5563;
+        }
+        
+        .btn-settings {
+            padding: 10px 20px;
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+        
+        .btn-settings:hover:not(:disabled) {
+            background: #e5e7eb;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 30px;
+            border: none;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 20px;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #000;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4b5563;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+        
+        .btn-save {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        /* Toast Notification Styles */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 250px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+        
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .toast.warning {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .toast.info {
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .toast-icon {
+            font-size: 20px;
+        }
+        
+        .toast-message {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        /* History Section */
+        .history-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .history-header {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-timestamp {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .history-event {
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        .toggle-history {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+        }
     </style>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 </head>
@@ -238,6 +513,17 @@
             <button class="btn btn-disconnect" id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
         </div>
         
+        <div class="settings-section">
+            <div class="setting-item">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="autoReconnectToggle" onchange="toggleAutoReconnect(this.checked)">
+                    <span class="slider"></span>
+                </label>
+                <span class="setting-label">Auto-Reconnect</span>
+            </div>
+            <button class="btn btn-settings" onclick="openSettings()">Settings</button>
+        </div>
+        
         <div class="log-section">
             <div class="log-header">Connection Log</div>
             <div class="log-container" id="logContainer">
@@ -248,16 +534,72 @@
             </div>
         </div>
         
+        <div class="history-section" id="historySection">
+            <div class="history-header">Connection History</div>
+            <div class="history-list" id="historyList">
+                <!-- History items will be added here dynamically -->
+            </div>
+        </div>
+        
         <div class="footer">
             <p>kimoVPN v0.1.0 - Educational Project</p>
+            <span class="toggle-history" onclick="toggleHistory()">Show History</span>
         </div>
     </div>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">VPN Settings</h2>
+                <span class="close" onclick="closeSettings()">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Server Host</label>
+                <input type="text" id="serverHost" class="form-input" placeholder="e.g., vpn.example.com">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Server Port</label>
+                <input type="number" id="serverPort" class="form-input" placeholder="e.g., 13337">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" id="username" class="form-input" placeholder="Enter username">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Enter password">
+            </div>
+            
+            <div class="form-group">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="sslVerify">
+                    <span class="slider"></span>
+                </label>
+                <span class="setting-label">Verify SSL Certificate</span>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeSettings()">Cancel</button>
+                <button class="btn-save" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
     
     <script>
         const socket = io();
         let currentStatus = 'disconnected';
         let connectionStartTime = null;
         let durationInterval = null;
+        let autoReconnect = false;
+        let connectionHistory = [];
         
         // socket.io event handlers
         socket.on('connect', function() {
@@ -270,6 +612,10 @@
         
         socket.on('status_update', function(data) {
             updateStatus(data.status);
+        });
+        
+        socket.on('stats_update', function(data) {
+            updateStats(data);
         });
         
         // update UI based on status
@@ -428,6 +774,13 @@
                 const response = await fetch('/api/status');
                 const data = await response.json();
                 updateStatus(data.status);
+                if (data.auto_reconnect !== undefined) {
+                    autoReconnect = data.auto_reconnect;
+                    document.getElementById('autoReconnectToggle').checked = autoReconnect;
+                }
+                if (data.stats) {
+                    updateStats(data.stats);
+                }
             } catch (error) {
                 console.error('Failed to fetch status:', error);
             }
@@ -440,23 +793,9 @@
         setInterval(async () => {
             if (currentStatus === 'connected') {
                 try {
-                    const response = await fetch('/api/status');
+                    const response = await fetch('/api/stats');
                     const data = await response.json();
-                    if (data.stats) {
-                        // update stats display
-                        if (data.stats.bytes_sent) {
-                            document.getElementById('uploadStat').textContent = 
-                                formatBytes(data.stats.bytes_sent);
-                        }
-                        if (data.stats.bytes_received) {
-                            document.getElementById('downloadStat').textContent = 
-                                formatBytes(data.stats.bytes_received);
-                        }
-                        if (data.stats.current_latency_ms) {
-                            document.getElementById('latencyStat').textContent = 
-                                `${Math.round(data.stats.current_latency_ms)} ms`;
-                        }
-                    }
+                    updateStats(data);
                 } catch (error) {
                     console.error('Failed to fetch stats:', error);
                 }
@@ -468,6 +807,174 @@
             if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
             if (bytes < 1073741824) return (bytes / 1048576).toFixed(1) + ' MB';
             return (bytes / 1073741824).toFixed(2) + ' GB';
+        }
+        
+        function updateStats(stats) {
+            if (stats.bytes_sent !== undefined) {
+                document.getElementById('uploadStat').textContent = formatBytes(stats.bytes_sent);
+            }
+            if (stats.bytes_received !== undefined) {
+                document.getElementById('downloadStat').textContent = formatBytes(stats.bytes_received);
+            }
+            if (stats.current_latency_ms !== undefined && stats.current_latency_ms !== null) {
+                document.getElementById('latencyStat').textContent = 
+                    `${Math.round(stats.current_latency_ms)} ms`;
+            }
+        }
+        
+        function toggleAutoReconnect(enabled) {
+            autoReconnect = enabled;
+            fetch('/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ auto_reconnect: enabled })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('info', `Auto-reconnect ${enabled ? 'enabled' : 'disabled'}`);
+                }
+            })
+            .catch(error => {
+                showToast('error', `Failed to update auto-reconnect: ${error.message}`);
+            });
+        }
+        
+        function openSettings() {
+            // fetch current config
+            fetch('/api/config')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('serverHost').value = data.server_host || '';
+                    document.getElementById('serverPort').value = data.server_port || '';
+                    document.getElementById('username').value = data.username || '';
+                    document.getElementById('sslVerify').checked = data.ssl_verify;
+                    document.getElementById('settingsModal').style.display = 'block';
+                })
+                .catch(error => {
+                    showToast('error', 'Failed to load settings');
+                });
+        }
+        
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+        
+        function saveSettings() {
+            const settings = {
+                server_host: document.getElementById('serverHost').value,
+                server_port: parseInt(document.getElementById('serverPort').value),
+                username: document.getElementById('username').value,
+                ssl_verify: document.getElementById('sslVerify').checked
+            };
+            
+            const password = document.getElementById('password').value;
+            if (password) {
+                settings.password = password;
+            }
+            
+            fetch('/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('success', 'Settings saved successfully');
+                    closeSettings();
+                } else {
+                    showToast('error', data.message || 'Failed to save settings');
+                }
+            })
+            .catch(error => {
+                showToast('error', `Error saving settings: ${error.message}`);
+            });
+        }
+        
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️',
+                'info': 'ℹ️'
+            };
+            
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+                <span class="toast-message">${message}</span>
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function toggleHistory() {
+            const historySection = document.getElementById('historySection');
+            const toggleLink = document.querySelector('.toggle-history');
+            
+            if (historySection.style.display === 'none' || !historySection.style.display) {
+                // fetch history
+                fetch('/api/history')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateHistoryDisplay(data.history || []);
+                        historySection.style.display = 'block';
+                        toggleLink.textContent = 'Hide History';
+                    })
+                    .catch(error => {
+                        showToast('error', 'Failed to load history');
+                    });
+            } else {
+                historySection.style.display = 'none';
+                toggleLink.textContent = 'Show History';
+            }
+        }
+        
+        function updateHistoryDisplay(history) {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="history-item">No connection history</div>';
+                return;
+            }
+            
+            // show last 10 items
+            history.slice(-10).reverse().forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                const timestamp = new Date(item.timestamp).toLocaleString();
+                const event = item.event || 'unknown';
+                const server = item.server || '';
+                
+                historyItem.innerHTML = `
+                    <div>
+                        <div class="history-timestamp">${timestamp}</div>
+                        <div class="history-event">${event} ${server ? `- ${server}` : ''}</div>
+                    </div>
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        // close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('settingsModal');
+            if (event.target == modal) {
+                closeSettings();
+            }
         }
     </script>
 </body>
