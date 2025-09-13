@@ -2,13 +2,16 @@
 
 ## Overview
 
-kimoVPN is an educational project that demonstrates secure networking concepts through a custom VPN implementation. It features end-to-end encryption, web-based client control, and a fail-secure kill switch mechanism.
+kimoVPN is an private project that demonstrates secure networking concepts through a custom VPN implementation. It features end-to-end encryption, web-based client control, and a fail-secure kill switch mechanism.
+
+![kimoVPN Web UI](https://github.com/user-attachments/assets/kimovpn-ui-screenshot-3.png)
+
 
 ## Features
 
 - **Secure Connection**: TLS/SSL with PyNaCl encryption
 - **Web UI Control Panel**: Modern web interface for VPN management
-- **Kill Switch**: Fail-secure mechanism to prevent data leaks
+- **Kill Switch (TBA)**: Fail-secure mechanism to prevent data leaks
 - **Real-time Status**: WebSocket-based status updates
 - **Cross-platform**: Windows client, Linux server
 - **Easy Distribution**: Single executable for Windows
