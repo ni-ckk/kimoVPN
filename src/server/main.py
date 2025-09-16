@@ -8,6 +8,7 @@ Starts the VPN server with command-line arguments and proper configuration.
 import sys
 import os
 import signal
+import time
 import argparse
 from pathlib import Path
 from typing import Optional
@@ -206,7 +207,13 @@ def main():
         # keep server running
         while server_instance.running:
             try:
-                signal.pause() if hasattr(signal, 'pause') else input()
+                # on windows, signal.pause() doesn't exist, use sleep instead
+                if sys.platform == "win32":
+                    time.sleep(1)
+                elif hasattr(signal, 'pause'):
+                    signal.pause()
+                else:
+                    time.sleep(1)
             except (KeyboardInterrupt, EOFError):
                 break
         

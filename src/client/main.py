@@ -8,6 +8,7 @@ Starts the VPN client with web UI and command-line interface.
 import sys
 import os
 import signal
+import time
 import argparse
 import threading
 import webbrowser
@@ -119,6 +120,13 @@ def parse_arguments():
         help="Connect immediately (command-line mode)"
     )
     
+    # local development mode
+    parser.add_argument(
+        "--local",
+        action="store_true",
+        help="Local development mode (disables SSL verification, uses localhost)"
+    )
+    
     return parser.parse_args()
 
 
@@ -213,6 +221,17 @@ def main():
         # get settings
         settings = get_settings()
         
+        # handle local development mode
+        if args.local:
+            logger.info("local development mode enabled")
+            args.no_verify = True  # disable ssl verification
+            if not args.server:
+                args.server = "127.0.0.1"  # use localhost
+            if not args.username:
+                args.username = "testuser"  # use test username
+            if not args.password:
+                args.password = "testpass123"  # use test password
+        
         # override settings with command-line arguments
         server_host = args.server or settings.SERVER_HOST
         server_port = args.port or settings.SERVER_PORT
@@ -267,7 +286,12 @@ def main():
                 
                 try:
                     while connection_instance.status == ConnectionStatus.CONNECTED:
-                        signal.pause() if hasattr(signal, 'pause') else input()
+                        if sys.platform == "win32":
+                            time.sleep(1)
+                        elif hasattr(signal, 'pause'):
+                            signal.pause()
+                        else:
+                            time.sleep(1)
                 except (KeyboardInterrupt, EOFError):
                     pass
             else:
@@ -314,7 +338,12 @@ def main():
             # keep running
             try:
                 while True:
-                    signal.pause() if hasattr(signal, 'pause') else input()
+                    if sys.platform == "win32":
+                        time.sleep(1)
+                    elif hasattr(signal, 'pause'):
+                        signal.pause()
+                    else:
+                        time.sleep(1)
             except (KeyboardInterrupt, EOFError):
                 pass
         
