@@ -1,0 +1,69 @@
+# Byte-compiled / optimized / C extensions
+__pycache__/
+*.py[cod]
+*.so
+
+# Distribution / packaging
+build/
+dist/
+eggs/
+*.egg-info/
+*.egg
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+
+# Django
+db.sqlite3
+/media/
+
+# Virtual Environments
+venv/
+env/
+
+# References folder
+refs/
+
+# Environment variables
+.env*
+
+# Security - NEVER commit certificates or keys
+certs/
+*.crt
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Hidden folders (development/local)
+/.*
+!/.git
+
+# Documentation files
+*.md
+!README.md
+!docs/**/*.md
+
+# IDE and OS files
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary files and folders
+temp/
+tmp/
+
+# SeleniumBase logs and downloads
+downloaded_files/
+latest_logs/
+recordings/
+*.log
+new_recording.py
+
+# Local test scripts
+test_idealo_local.py
+test_ebay_local.py
