@@ -11,7 +11,7 @@ import socket
 import ssl
 import time
 import threading
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Dict, Any
 from pydantic import BaseModel
 import structlog
 import sys
@@ -26,6 +26,7 @@ from src.common.protocol import (
 )
 from src.common.crypto import create_client_ssl_context
 from src.common.models import ConnectionStatus
+from src.client.packet_handler import ClientPacketHandler, PacketTester
 
 logger = structlog.get_logger()
 
@@ -78,6 +79,10 @@ class VPNConnection:
         # callbacks
         self.on_status_change = None
         self.on_message_received = None
+        
+        # packet handler for phase 2
+        self.packet_handler = ClientPacketHandler(send_callback=self._send_message)
+        self.packet_tester = PacketTester(self.packet_handler)
         
     def connect(self) -> bool:
         """
@@ -144,6 +149,9 @@ class VPNConnection:
                     daemon=True
                 )
                 self.heartbeat_thread.start()
+                
+                # start packet handler
+                self.packet_handler.start()
                 
                 logger.info("connection established")
                 
@@ -239,6 +247,9 @@ class VPNConnection:
         
         # stop threads
         self.running = False
+        
+        # stop packet handler
+        self.packet_handler.stop()
         
         # cleanup connection
         self._cleanup_connection()
@@ -342,6 +353,9 @@ class VPNConnection:
                 error_message=message.payload.get("error_message")
             )
             self._update_status(ConnectionStatus.ERROR)
+        elif message.msg_type == MessageType.DATA:
+            # handle data packets (phase 2)
+            self._handle_data_message(message)
         else:
             # notify callback if set
             if self.on_message_received:
@@ -430,3 +444,60 @@ class VPNConnection:
             seq = self.sequence
             self.sequence += 1
             return seq
+    
+    def _handle_data_message(self, message: ProtocolMessage):
+        """
+        Handle DATA message containing packet data.
+        
+        Args:
+            message: Data message
+        """
+        # get packet data from payload
+        packet_data = message.payload.get("data", b"")
+        
+        if not packet_data:
+            logger.warning("empty data packet received")
+            return
+        
+        # if packet data is base64 encoded string, decode it
+        if isinstance(packet_data, str):
+            import base64
+            try:
+                packet_data = base64.b64decode(packet_data)
+            except Exception as e:
+                logger.error(f"failed to decode packet data: {e}")
+                return
+        
+        # process through packet handler
+        self.packet_handler.process_received_packet(packet_data)
+        
+        logger.debug(f"processed data packet, size={len(packet_data)}")
+    
+    def send_packet_data(self, data: bytes):
+        """
+        Send packet data to server.
+        
+        Args:
+            data: Raw packet data to send
+        """
+        if not self.authenticated:
+            logger.warning("cannot send data - not authenticated")
+            return
+        
+        self.packet_handler.send_data(data)
+    
+    def run_echo_test(self, **kwargs) -> Dict[str, Any]:
+        """
+        Run echo test with server.
+        
+        Args:
+            **kwargs: Arguments passed to PacketTester.run_echo_test
+            
+        Returns:
+            Test results
+        """
+        if not self.authenticated:
+            logger.warning("cannot run echo test - not authenticated")
+            return {"error": "Not authenticated"}
+        
+        return self.packet_tester.run_echo_test(**kwargs)
