@@ -16,6 +16,10 @@ dependencies = [
     "structlog>=24.0.0",        # structured logging
     "cryptography>=41.0.0",     # for certificate generation
     "pyinstaller>=6.0.0",       # windows executable packaging
+    "scapy>=2.5.0",             # packet manipulation and analysis
+    "pyroute2>=0.7.0",          # linux network configuration
+    "pywin32>=305; platform_system=='Windows'",  # windows api access
+    "ipaddress>=1.0.0",         # ip address manipulation (backport for older python)
 ]
 
 [build-system]

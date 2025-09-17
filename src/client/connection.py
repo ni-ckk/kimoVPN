@@ -27,6 +27,7 @@ from src.common.protocol import (
 from src.common.crypto import create_client_ssl_context
 from src.common.models import ConnectionStatus
 from src.client.packet_handler import ClientPacketHandler, PacketTester
+from src.client.tun_interface import create_tun_interface
 
 logger = structlog.get_logger()
 
@@ -83,6 +84,10 @@ class VPNConnection:
         # packet handler for phase 2
         self.packet_handler = ClientPacketHandler(send_callback=self._send_message)
         self.packet_tester = PacketTester(self.packet_handler)
+
+        # tun interface for phase 4
+        self.tun_interface = None
+        self.tun_enabled = False
         
     def connect(self) -> bool:
         """
@@ -251,6 +256,9 @@ class VPNConnection:
         # stop packet handler
         self.packet_handler.stop()
         
+        # cleanup tun interface
+        self._cleanup_tun_interface()
+        
         # cleanup connection
         self._cleanup_connection()
         
@@ -381,6 +389,10 @@ class VPNConnection:
                 message=auth_message,
                 virtual_ip=self.virtual_ip
             )
+            
+            # initialize tun interface if enabled
+            if self.tun_enabled:
+                self._initialize_tun_interface()
         else:
             logger.error(f"authentication failed: {auth_message}")
             self._update_status(ConnectionStatus.ERROR)
@@ -468,8 +480,12 @@ class VPNConnection:
                 logger.error(f"failed to decode packet data: {e}")
                 return
         
-        # process through packet handler
-        self.packet_handler.process_received_packet(packet_data)
+        # if tun interface is enabled, forward to tun
+        if self.tun_enabled and self.tun_interface:
+            self._handle_vpn_packet(packet_data)
+        else:
+            # process through packet handler (for phase 2 echo testing)
+            self.packet_handler.process_received_packet(packet_data)
         
         logger.debug(f"processed data packet, size={len(packet_data)}")
     
@@ -542,3 +558,92 @@ class VPNConnection:
                 stats["average_latency_ms"] = handler_stats["echo_avg_latency_ms"]
         
         return stats
+
+    def enable_tun_interface(self, enable: bool = True):
+        """
+        Enable or disable TUN interface support.
+        
+        Args:
+            enable: Whether to enable TUN interface
+        """
+        self.tun_enabled = enable
+        logger.info(f"tun interface {'enabled' if enable else 'disabled'}")
+    
+    def _initialize_tun_interface(self):
+        """Initialize TUN interface after successful authentication."""
+        if not self.tun_enabled:
+            logger.debug("tun interface not enabled, skipping initialization")
+            return
+        
+        if not self.virtual_ip:
+            logger.error("cannot initialize tun - no virtual ip assigned")
+            return
+        
+        try:
+            # create tun interface with assigned virtual ip
+            self.tun_interface = create_tun_interface(
+                name="kimoVPN",
+                ip_address=self.virtual_ip,
+                netmask="255.255.255.0",
+                gateway=self.config.server_host,  # use server as gateway
+                mtu=1500
+            )
+            
+            # create and start interface
+            if self.tun_interface.create():
+                if self.tun_interface.start():
+                    # set callback for packets from tun
+                    self.tun_interface.on_packet_received = self._handle_tun_packet
+                    logger.info(f"tun interface initialized with ip {self.virtual_ip}")
+                else:
+                    logger.error("failed to start tun interface")
+            else:
+                logger.error("failed to create tun interface")
+            
+        except Exception as e:
+            logger.error(f"failed to initialize tun interface: {e}")
+            self.tun_interface = None
+    
+    def _cleanup_tun_interface(self):
+        """Clean up TUN interface."""
+        if self.tun_interface:
+            try:
+                self.tun_interface.destroy()
+                logger.info("tun interface cleaned up")
+            except Exception as e:
+                logger.error(f"error cleaning up tun interface: {e}")
+            finally:
+                self.tun_interface = None
+    
+    def _handle_tun_packet(self, packet_data: bytes):
+        """
+        Handle packet received from TUN interface.
+        
+        Args:
+            packet_data: Raw packet data
+        """
+        # send through vpn tunnel
+        if self.authenticated:
+            self.send_packet_data(packet_data)
+    
+    def _handle_vpn_packet(self, packet_data: bytes):
+        """
+        Handle packet received from VPN tunnel.
+        
+        Args:
+            packet_data: Raw packet data
+        """
+        # forward to tun interface
+        if self.tun_interface and self.tun_interface.running:
+            self.tun_interface.write_packet(packet_data)
+    
+    def get_tun_stats(self) -> Optional[Dict[str, Any]]:
+        """
+        Get TUN interface statistics.
+        
+        Returns:
+            TUN interface stats or None
+        """
+        if self.tun_interface:
+            return self.tun_interface.get_stats()
+        return None
