@@ -146,7 +146,7 @@ name = "cffi"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
+    { name = "pycparser", marker = "(python_full_version < '3.10' and implementation_name != 'PyPy') or (implementation_name != 'PyPy' and platform_python_implementation != 'PyPy')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/eb/56/b1ba7935a17738ae8453301356628e8147c79dbb825bcbc73dc7401f9846/cffi-2.0.0.tar.gz", hash = "sha256:44d1b5909021139fe36001ae048dbdde8214afa20200eda0f64c068cac5d5529", size = 523588, upload-time = "2025-09-08T23:24:04.541Z" }
 wheels = [
@@ -355,6 +355,19 @@ wheels = [
 ]
 
 [[package]]
+name = "flask-cors"
+version = "6.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "flask" },
+    { name = "werkzeug" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/76/37/bcfa6c7d5eec777c4c7cf45ce6b27631cebe5230caf88d85eadd63edd37a/flask_cors-6.0.1.tar.gz", hash = "sha256:d81bcb31f07b0985be7f48406247e9243aced229b7747219160a0559edd678db", size = 13463, upload-time = "2025-06-11T01:32:08.518Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/17/f8/01bf35a3afd734345528f98d0353f2a978a476528ad4d7e78b70c4d149dd/flask_cors-6.0.1-py3-none-any.whl", hash = "sha256:c7b2cbfb1a31aa0d2e5341eea03a6805349f7a61647daee1a15c46bbe981494c", size = 13244, upload-time = "2025-06-11T01:32:07.352Z" },
+]
+
+[[package]]
 name = "flask-socketio"
 version = "5.5.1"
 source = { registry = "https://pypi.org/simple" }
@@ -425,6 +438,7 @@ source = { editable = "." }
 dependencies = [
     { name = "cryptography" },
     { name = "flask" },
+    { name = "flask-cors" },
     { name = "flask-socketio" },
     { name = "passlib", extra = ["bcrypt"] },
     { name = "pydantic" },
@@ -447,6 +461,7 @@ dev = [
 requires-dist = [
     { name = "cryptography", specifier = ">=41.0.0" },
     { name = "flask", specifier = ">=3.0.0" },
+    { name = "flask-cors", specifier = ">=4.0.0" },
     { name = "flask-socketio", specifier = ">=5.3.0" },
     { name = "passlib", extras = ["bcrypt"], specifier = ">=1.7.4" },
     { name = "pydantic", specifier = ">=2.0.0" },
